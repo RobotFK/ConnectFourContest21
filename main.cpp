@@ -17,51 +17,34 @@ The value in each Field (F) has a meaning:
 The function participating is to Evaluate the field and return the column (0-6) to enter a chip in
 
 */
-
 #include <iostream>
-
 using namespace std;
 
-class Field {
-  private:
-    int F[7][6];   //Main Attribute
-  public:
-    string Empty;  // Attribute (string variable)
+int F[7][6];
+string winner = "0";
 
-    void Fill() {
-        int draw = 1;//Change to disable
-        if (draw == 1) {
-            for (int y = 0; y <= 5; y++) {
-                for (int x = 0; x <= 6; x++) {
-                    F[x][y] = 0;
-                }
-            }
-        }
-        cout <<"Field Filled" << endl;
-    }
-
-    void switchsides() {
+void Drawfield() {
+    int draw = 1;//Change to disable
+    if (draw == 1) {
         for (int y = 0; y <= 5; y++) {
             for (int x = 0; x <= 6; x++) {
-                F[x][y] = F[x][y] != 0 ? (F[x][y] % 2) + 1 : 0;
+                cout << F[x][y];
             }
+            cout << endl;
         }
     }
+    cout << endl;
+}
 
-    void Drawfield() {
-        int draw = 1;//Change to disable
-        if (draw == 1) {
-            for (int y = 0; y <= 5; y++) {
-                for (int x = 0; x <= 6; x++) {
-                    cout << F[x][y];
-                }
-                cout << endl;
-            }
+void switchsides() {
+    for (int y = 0; y <= 5; y++) {
+        for (int x = 0; x <= 6; x++) {
+            F[x][y] = F[x][y] != 0 ? (F[x][y] % 2) + 1 : 0;
         }
-        cout << endl;
     }
+}
 
-    string Placemarker(int x, string name) {
+string Placemarker(int x, string name) {
     bool victory = false;
     bool placed = false;
     int y;
@@ -281,13 +264,8 @@ class Field {
         cout << "Southern mid for Diagonall Rates as Oob" << endl;}
 
     return winner; // If we have triggerd nothing so far, this placement was not winning
+
 }
-
-    int R(int x){ //Returns a Horizontal "r"ow
-
-    }
-
-};
 
 int placerand() {
     return 3; // OH YEAH ! an XKCD/221/ reference
@@ -302,20 +280,20 @@ int placebyhand() {
     return input; // Using a Humans to give input for testing
 }
 
-int main()
-{
-    string winner = "0";
-    Field F;
-    F.Fill();
+int main() {
+    cout << "Initalising:" << endl;
     while (winner == "0") {
-        winner = F.Placemarker(placerand(), "placerand");
-        F.Drawfield();
-        F.switchsides();
-        winner = F.Placemarker(placebyhand(), "a Debugging user");
-        F.Drawfield();
-        F.switchsides();
+        winner = Placemarker(placerand(), "placerand");
+        //Drawfield();
+        switchsides();
+        winner = Placemarker(placebyhand(), "a Debugging user");
+        //Drawfield();
+        switchsides();
         if (F[0][0] != 0 && F[1][0] != 0 && F[2][0] != 0 && F[3][0] != 0 && F[4][0] != 0 && F[5][0] != 0 && F[6][0] != 0) {
             winner = "Null";
-        }}
+        }
+        //cin >> winner;
+    }
+    cout << endl << "Winner is " << winner;
     return 0;
 }
