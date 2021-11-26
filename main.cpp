@@ -16,35 +16,59 @@ The value in each Field (F) has a meaning:
 
 The function participating is to Evaluate the field and return the column (0-6) to enter a chip in
 
+Obj.r(int) returns a specific row as an int with each Digit(0/1/2) representing a Collum (e.x. 1212101)
+
+Obj.c(int) returns a specific Collum as an int with each Digit(0/1/2) representing a row (e.x. 000121)
+
 */
+
 #include <iostream>
+#include<time.h>
+
 using namespace std;
 
-int F[7][6];
 string winner = "0";
 
-void Drawfield() {
-    int draw = 1;//Change to disable
-    if (draw == 1) {
+class Field {
+  private:
+    int F[7][6];   //Main Attribute
+  public:
+    string Empty;  // Attribute (string variable)
+
+    void Fill() {
+        int draw = 1;//Change to disable
+        if (draw == 1) {
+            for (int y = 0; y <= 5; y++) {
+                for (int x = 0; x <= 6; x++) {
+                    F[x][y] = 0;
+                }
+            }
+        }
+        cout <<"Field Filled" << endl;
+    }
+
+    void switchsides() {
         for (int y = 0; y <= 5; y++) {
             for (int x = 0; x <= 6; x++) {
-                cout << F[x][y];
+                F[x][y] = F[x][y] != 0 ? (F[x][y] % 2) + 1 : 0;
             }
-            cout << endl;
         }
     }
-    cout << endl;
-}
 
-void switchsides() {
-    for (int y = 0; y <= 5; y++) {
-        for (int x = 0; x <= 6; x++) {
-            F[x][y] = F[x][y] != 0 ? (F[x][y] % 2) + 1 : 0;
+    void Drawfield() {
+        int draw = 1;//Change to disable
+        if (draw == 1) {
+            for (int y = 0; y <= 5; y++) {
+                for (int x = 0; x <= 6; x++) {
+                    cout << F[x][y];
+                }
+                cout << endl;
+            }
         }
+        cout << endl;
     }
-}
 
-string Placemarker(int x, string name) {
+    string Placemarker(int x, string name) {
     bool victory = false;
     bool placed = false;
     int y;
@@ -62,8 +86,8 @@ string Placemarker(int x, string name) {
             winner = "not " + name;
         }
     }
-    //Evaluating victorynext
 
+    //Evaluating victorynext
     if (F[0][0] != 0 && F[1][0] != 0 && F[2][0] != 0 && F[3][0] != 0 && F[4][0] != 0 && F[5][0] != 0 && F[6][0] != 0) {
         return "a Tie";
     }
@@ -84,17 +108,17 @@ string Placemarker(int x, string name) {
 
     //Side
     if (F[3][y] == 1) {// 0001000
-        if (F[x][2] == 1) {// 0011000
-            if (F[x][1] == 1) {// 0111000
-                if (F[x][0] == 1 or F[x][4]) {
+        if (F[2][y] == 1) {// 0011000
+            if (F[1][y] == 1) {// 0111000
+                if (F[0][y] == 1 or F[4][y]) {
                     return name;
                 }
-            }else if (F[x][4] == 1) { // 0211100
-                if  (F[x][5] == 1) {
+            }else if (F[4][y] == 1) { // 0211100
+                if  (F[5][y] == 1) {
                     return name;
                 }
             }
-        }else if (F[x][4] == 1 and F[x][5] == 1 and F[x][6] == 1) {// 0021111
+        }else if (F[4][y] == 1 and F[5][y] == 1 and F[6][y] == 1) {// 0021111
                 return name;
         }
     }
@@ -188,9 +212,11 @@ string Placemarker(int x, string name) {
         default:
         cout << "Error in Diagonal Distance calc North" << endl;
         }
-        }else{cout << "Northern mid for Diagonall Rates as Not owned" << endl;}
+        }else{//cout << "Northern mid for Diagonall Rates as Not owned" << endl;
+        }
     }else{
-        cout << "Northern mid for Diagonall Rates as Oob" << endl;}
+        //cout << "Northern mid for Diagonall Rates as Out of Out of Bounds" << endl;
+        }
 
     //Diagonalls NW , copied from The NE version
     if (midys != -1 ){
@@ -259,41 +285,51 @@ string Placemarker(int x, string name) {
         default:
         cout << "Error in Diagonal Distance calc south" << endl;
         }
-        }else{cout << "Southern mid for Diagonall Rates as Not owned" << endl;}
+        }else{//cout << "Southern mid for Diagonall Rates as Not owned" << endl;
+        }
     }else{
-        cout << "Southern mid for Diagonall Rates as Oob" << endl;}
+        //cout << "Southern mid for Diagonall Rates as Out of Bounds" << endl;
+        }
 
     return winner; // If we have triggerd nothing so far, this placement was not winning
-
 }
 
-int placerand() {
-    return 3; // OH YEAH ! an XKCD/221/ reference
+    int R(int y){ //Returns a Horizontal "r"ow
+    return (F[0][y]*1000000)+(F[1][y]*100000)+(F[2][y]*10000)+(F[3][y]*1000)+(F[4][y]*100)+(F[5][y]*10)+(F[6][y]);
+    }
+    int C(int x){ //Returns a Vertial "C"ollum
+    return (F[x][0]*100000)+(F[x][1]*10000)+(F[x][2]*1000)+(F[x][3]*100)+(F[x][4]*10)+(F[x][5]*1);
+    }
+};
+
+int placerand(Field* ptr) {
+    srand(time(0));
+    return rand()%6;
+    return 3;// OH YEAH !This was an XKCD/221/ reference
 }
 
-int placebyhand() {
+int placebyhand(Field* ptr) {
     int input;
-    Drawfield();
+    (*ptr).Drawfield();
     cout << "Input:";
     cin >> input;
     cout << endl;
     return input; // Using a Humans to give input for testing
 }
 
-int main() {
-    cout << "Initalising:" << endl;
+int main()
+{
+    Field F;
+    Field* Field_ptr = &F;
+    F.Fill();
     while (winner == "0") {
-        winner = Placemarker(placerand(), "placerand");
-        //Drawfield();
-        switchsides();
-        winner = Placemarker(placebyhand(), "a Debugging user");
-        //Drawfield();
-        switchsides();
-        if (F[0][0] != 0 && F[1][0] != 0 && F[2][0] != 0 && F[3][0] != 0 && F[4][0] != 0 && F[5][0] != 0 && F[6][0] != 0) {
-            winner = "Null";
+        winner = F.Placemarker(placerand(Field_ptr), "placerand");
+        F.Drawfield();
+        F.switchsides();
+        winner = F.Placemarker(placebyhand(Field_ptr), "a Debugging user");
+        F.Drawfield();
+        F.switchsides();
         }
-        //cin >> winner;
-    }
-    cout << endl << "Winner is " << winner;
+    cout << "Match ended Victor is: " << winner << endl;
     return 0;
 }
